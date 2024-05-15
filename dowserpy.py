@@ -1,4 +1,4 @@
-import numpy as np
+import prepare_receptor4
 import sys
 import os
 import subprocess
@@ -8,6 +8,14 @@ if __name__ == "__main__":
     cutoff_energy = -4.0
     pdbqt = sys.argv[1]+"qt"
     # check if pdbqt exists
+    if not os.path.isfile(pdbqt):
+        prepare_receptor4.main("-r " + sys.argv[1] + " -A " +
+                               "bonds_hydrogens")
+    if not os.path.isfile(pdbqt):
+        prepare_receptor4.main("-r " + sys.argv[1] + " -A " +
+                               "hydrogens")
+    if not os.path.isfile(pdbqt):
+        prepare_receptor4.main("-r " + sys.argv[1])
 
     # run pdbqt utility
     pdbqt_tool_args = ("./pdbqt", pdbqt)
@@ -37,5 +45,3 @@ if __name__ == "__main__":
     # run placeWat
 
     # run choosing
-
-    pass
