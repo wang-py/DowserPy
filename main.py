@@ -18,9 +18,8 @@ if __name__ == "__main__":
     if not os.path.isfile(pdbqt):
         prepare_receptor((" -r ", sys.argv[1]))
 
-
     # run pdbqt utility
-    pdbqt_tool_args = ("./pdbqt", pdbqt)
+    pdbqt_tool_args = ("./bin/pdbqt", pdbqt)
     popen = subprocess.Popen(pdbqt_tool_args, stdout=subprocess.PIPE)
     popen.wait()
     shutil.copy("new.pdbqt", pdbqt)
