@@ -19,43 +19,44 @@ if __name__ == '__main__':
 
     def usage():
         "Print helpful, accurate usage statement to stdout."
-        print("Usage: prepare_receptor4.py -r filename")
-        print("    Description of command...")
-        print("         -r   receptor_filename ")
-        print("        supported file types include pdb,mol2,pdbq,pdbqs,pdbqt, possibly pqr,cif")
-        print("    Optional parameters:")
-        print("        [-v]  verbose output (default is minimal output)")
-        print("        [-o pdbqt_filename]  (default is 'molecule_name.pdbqt')")
-        print("        [-A]  type(s) of repairs to make: ")
-        print("             'bonds_hydrogens': build bonds and add hydrogens ")
-        print("             'bonds': build a single bond from each atom with no bonds to its closest neighbor" )
-        print("             'hydrogens': add hydrogens")
-        print("             'checkhydrogens': add hydrogens only if there are none already")
-        print("             'None': do not make any repairs ")
-        print("             (default is 'checkhydrogens')")
-        print("        [-C]  preserve all input charges ie do not add new charges ")
-        print("             (default is addition of gasteiger charges)")
-        print("        [-p]  preserve input charges on specific atom types, eg -p Zn -p Fe")
-        print("        [-U]  cleanup type:")
-        print("             'nphs': merge charges and remove non-polar hydrogens")
-        print("             'lps': merge charges and remove lone pairs")
-        print("             'waters': remove water residues")
-        print("             'nonstdres': remove chains composed entirely of residues of")
-        print("                      types other than the standard 20 amino acids")
-        print("             'deleteAltB': remove XX@B atoms and rename XX@A atoms->XX")
-        print("             (default is 'nphs_lps_waters_nonstdres') ")
-        print("        [-e]  delete every nonstd residue from any chain")
-        print("              'True': any residue whose name is not in this list:")
-        print("                      ['CYS','ILE','SER','VAL','GLN','LYS','ASN', ")
-        print("                      'PRO','THR','PHE','ALA','HIS','GLY','ASP', ")
-        print("                      'LEU', 'ARG', 'TRP', 'GLU', 'TYR','MET', ")
-        print("                      'HID', 'HSP', 'HIE', 'HIP', 'CYX', 'CSS']")
-        print("              will be deleted from any chain. ")
-        print("              NB: there are no  nucleic acid residue names at all ")
-        print("              in the list and no metals. ")
-        print("             (default is False which means not to do this)")
-        print("        [-M]  interactive ")
-        print("             (default is 'automatic': outputfile is written with no further user input)"))
+        print "Usage: prepare_receptor4.py -r filename"
+        print
+        print "    Description of command..."
+        print "         -r   receptor_filename "
+        print "        supported file types include pdb,mol2,pdbq,pdbqs,pdbqt, possibly pqr,cif"
+        print "    Optional parameters:"
+        print "        [-v]  verbose output (default is minimal output)"
+        print "        [-o pdbqt_filename]  (default is 'molecule_name.pdbqt')"
+        print "        [-A]  type(s) of repairs to make: "
+        print "             'bonds_hydrogens': build bonds and add hydrogens "
+        print "             'bonds': build a single bond from each atom with no bonds to its closest neighbor" 
+        print "             'hydrogens': add hydrogens"
+        print "             'checkhydrogens': add hydrogens only if there are none already"
+        print "             'None': do not make any repairs "
+        print "             (default is 'checkhydrogens')"
+        print "        [-C]  preserve all input charges ie do not add new charges "
+        print "             (default is addition of gasteiger charges)"
+        print "        [-p]  preserve input charges on specific atom types, eg -p Zn -p Fe"
+        print "        [-U]  cleanup type:"
+        print "             'nphs': merge charges and remove non-polar hydrogens"
+        print "             'lps': merge charges and remove lone pairs"
+        print "             'waters': remove water residues"
+        print "             'nonstdres': remove chains composed entirely of residues of"
+        print "                      types other than the standard 20 amino acids"
+        print "             'deleteAltB': remove XX@B atoms and rename XX@A atoms->XX"
+        print "             (default is 'nphs_lps_waters_nonstdres') "
+        print "        [-e]  delete every nonstd residue from any chain"
+        print "              'True': any residue whose name is not in this list:"
+        print "                      ['CYS','ILE','SER','VAL','GLN','LYS','ASN', "
+        print "                      'PRO','THR','PHE','ALA','HIS','GLY','ASP', "
+        print "                      'LEU', 'ARG', 'TRP', 'GLU', 'TYR','MET', "
+        print "                      'HID', 'HSP', 'HIE', 'HIP', 'CYX', 'CSS']"
+        print "              will be deleted from any chain. "
+        print "              NB: there are no  nucleic acid residue names at all "
+        print "              in the list and no metals. "
+        print "             (default is False which means not to do this)"
+        print "        [-M]  interactive "
+        print "             (default is 'automatic': outputfile is written with no further user input)"
 
 
     # process command arguments
