@@ -8,6 +8,11 @@ from dowserpy import prepare_receptor
 if __name__ == "__main__":
     cutoff_energy = -4.0
     pdbqt = sys.argv[1]+"qt"
+    boxes_path = sys.argv[2]
+    if len(sys.argv) < 4:
+        output_pdb = "PredictedInTunnel.pdb"
+    else:
+        output_pdb = sys.argv[3]
     # check if pdbqt exists
     if not os.path.isfile(pdbqt):
         prepare_receptor((" -r ", sys.argv[1], " -A ",
@@ -28,6 +33,9 @@ if __name__ == "__main__":
     # make vina config files
 
     # vina main loop
+    num_boxes = len([box_file for box_file in os.listdir(boxes_path)
+                     if os.path.isfile(box_file)])
+    print("There are %d tunnel points" % num_boxes)
 
     # run load_data
 
