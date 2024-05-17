@@ -4,7 +4,7 @@ import time
 import subprocess
 import shutil
 from glob import glob
-from dowserpy import prepare_receptor
+import dowserpy
 
 
 if __name__ == "__main__":
@@ -17,13 +17,13 @@ if __name__ == "__main__":
         output_pdb = sys.argv[3]
     # check if pdbqt exists
     if not os.path.isfile(pdbqt):
-        prepare_receptor((" -r ", sys.argv[1], " -A ",
-                         "bonds_hydrogens"))
+        dowserpy.prepare_receptor((" -r ", sys.argv[1], " -A ",
+                                   "bonds_hydrogens"))
     if not os.path.isfile(pdbqt):
-        prepare_receptor((" -r ", sys.argv[1], " -A ",
-                         "hydrogens"))
+        dowserpy.prepare_receptor((" -r ", sys.argv[1], " -A ",
+                                   "hydrogens"))
     if not os.path.isfile(pdbqt):
-        prepare_receptor((" -r ", sys.argv[1]))
+        dowserpy.prepare_receptor((" -r ", sys.argv[1]))
 
     # run pdbqt utility
     pdbqt_tool_args = ("./bin/pdbqt", pdbqt)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         for j in range(1, max_cluster + 1):
             print("Processing part %d out of %d" % (i, num_boxes), end='\r')
             print("Clustering round %d out of %d" % (j, max_cluster), end='\r')
-            time.sleep(3)
+            dowserpy.autodock_vina(pdbqt, boxes[i], j)
 
 
 
