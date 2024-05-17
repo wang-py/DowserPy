@@ -42,16 +42,29 @@ if __name__ == "__main__":
     print("There are %d tunnel points" % num_boxes)
 
     max_cluster = 3
-    for i in range(1, num_boxes + 1):
+    all_scores = []
+    all_sets = []
+    for i in range(num_boxes):
         print("Dowser with Caver, software for hydrating tunnels in" +
               " protein structures\n\nBy Panyue Wang at " +
               "University of California, Davis")
-        print("working on box %d" % i)
+        print("working on box %d out of %d" % (i + 1, num_boxes))
         for j in range(1, max_cluster + 1):
-            print("Processing part %d out of %d" % (i, num_boxes), end='\r')
+            print("Processing part %d out of %d" % (i + 1, num_boxes),
+                  end='\r')
             print("Clustering round %d out of %d" % (j, max_cluster), end='\r')
             dowserpy.autodock_vina(pdbqt, boxes[i], j)
+            water_result_filename = "Set%d.pdbqt" % j
+            water_data = dowserpy.get_water_data(water_result_filename)
+            all_sets.append(water_data[0])
+            all_scores.append(water_data[1])
+            os.remove(water_result_filename)
 
+    dowserpy.write_to_file(all_scores, "AllScores.txt")
+    dowserpy.write_to_file(all_sets, "AllSets.txt")
+
+    popen = subprocess.Popen(("./bin/load_data"), stdout=subprocess.PIPE)
+    popen.wait()
 
 
     # run load_data
