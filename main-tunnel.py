@@ -1,7 +1,9 @@
 import sys
 import os
+import time
 import subprocess
 import shutil
+from glob import glob
 from dowserpy import prepare_receptor
 
 
@@ -33,9 +35,24 @@ if __name__ == "__main__":
     # make vina config files
 
     # vina main loop
-    num_boxes = len([box_file for box_file in os.listdir(boxes_path)
-                     if os.path.isfile(box_file)])
+    # read in vina box configs
+    boxes = sorted(glob(boxes_path + "/*.txt"), key=os.path.getmtime)
+    num_boxes = len(boxes)
+
     print("There are %d tunnel points" % num_boxes)
+
+    max_cluster = 3
+    for i in range(1, num_boxes + 1):
+        print("Dowser with Caver, software for hydrating tunnels in" +
+              " protein structures\n\nBy Panyue Wang at " +
+              "University of California, Davis")
+        print("working on box %d" % i)
+        for j in range(1, max_cluster + 1):
+            print("Processing part %d out of %d" % (i, num_boxes), end='\r')
+            print("Clustering round %d out of %d" % (j, max_cluster), end='\r')
+            time.sleep(3)
+
+
 
     # run load_data
 
