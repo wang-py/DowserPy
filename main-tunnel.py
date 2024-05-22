@@ -60,7 +60,7 @@ if __name__ == "__main__":
             os.remove(water_result_filename)
 
     dowserpy.write_to_file(all_scores, "AllScores.txt")
-    dowserpy.write_to_file(all_sets, "AllSets.txt")
+    dowserpy.write_to_file(all_sets, "AllSets.pdb")
 
     popen = subprocess.Popen(("./bin/load_data"), stdout=subprocess.PIPE)
     popen.wait()
