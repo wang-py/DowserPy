@@ -1,6 +1,5 @@
 import sys
 import os
-import time
 import subprocess
 import shutil
 from glob import glob
@@ -47,8 +46,8 @@ if __name__ == "__main__":
     for i in range(num_boxes):
         print("Dowser with Caver, software for hydrating tunnels in" +
               " protein structures\n\nBy Panyue Wang at " +
-              "University of California, Davis")
-        print("working on box %d out of %d" % (i + 1, num_boxes))
+              "University of California, Davis\n")
+        print("working on box %d out of %d\n" % (i + 1, num_boxes))
         for j in range(1, max_cluster + 1):
             print("Processing part %d out of %d" % (i + 1, num_boxes),
                   end='\r')
