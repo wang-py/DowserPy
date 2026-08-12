@@ -1,1 +1,9 @@
 test_files/
+*.pdb
+*.pse
+
+# Pipeline run directories created by main.py / dowser_pipeline.py
+run_*/
+
+__pycache__/
+*.pyc

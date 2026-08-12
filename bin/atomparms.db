@@ -1,0 +1,21 @@
+REMARK atomtype LJ-a LJ-b    MS-radius
+TYPE   N      49.36   1300.0  2.40   # any Nitorgen
+TYPE   H       0.00      0.0  0.0    # polar hydrogen
+TYPE   CR     48.37   1837.0  2.89   # sp2 carbon, w/o H
+TYPE   OA     47.56   1230.0  2.20   # oxygen in carboxylate
+TYPE   O      47.56    861.0  2.20   # other oxygen
+TYPE   S      99.20   3617.0  2.70   # any Sulfur
+TYPE   OW     51.16   1623.0  2.20   # SPC water oxygen
+REMARK: ions
+TYPE   CAL    47.56   861.00  1.80   # calcium
+TYPE   NA     47.56   861.00  1.80   # sodium
+TYPE   SOD     47.56   861.00  1.80   # sodium
+TYPE   ZN     20.57   942.38  1.60   # zinc
+REMARK: united-atom parameters for C and H  
+TYPE   CH2    95.38   5944.0  3.00   # aliphatic C with 2 H
+TYPE   CH1   111.80   8470.4  3.00   # aliphatic C with 1 H
+TYPE   CH3    94.20   5114.0  3.00   # aliphatic C with 3 H
+TYPE   CHR    74.25   3888.0  2.89   # aromatic C with 1 H
+REMARK: all-atom parameters for C and H  
+TYPE   HA      9.20   123.0   1.90   # aliphatic H
+TYPE   CA     40.0   1959.0   2.90   # aliphatic C
