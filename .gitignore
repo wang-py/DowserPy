@@ -2,3 +2,4 @@
 *.pse
 results/
 test_files/
+*/__pycache__/
