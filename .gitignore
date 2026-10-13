@@ -1,0 +1,4 @@
+*.pdb
+*.pse
+results/
+test_files/
