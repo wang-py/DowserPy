@@ -1,10 +1,19 @@
-import os
-import sys
+from python_scripts.pdb2msms import pdb_to_msms
+import argparse
+
+
+parser = argparse.ArgumentParser(description="Dowser NN pipeline")
+
+parser.add_argument("-p", "--input_pdb", help="input pdb file")
+
+args = parser.parse_args()
 
 if __name__ == "__main__":
     # TODO: 
     # 1. read protein
+    input_pdb = args.input_pdb
     # 2. pass protein pdb to msms to generate surface files
+    output_surface = pdb_to_msms(input_pdb, probe_radius=2, density=2)
     # 3. run AllWater to generate grid points
     # 4. run categorize water to remove surface water
     # 5. run placeWat to evaluate the grid points' energies
