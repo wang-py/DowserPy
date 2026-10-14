@@ -3,3 +3,4 @@
 results/
 test_files/
 */__pycache__/
+temp/*
