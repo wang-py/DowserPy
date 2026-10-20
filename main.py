@@ -1,5 +1,6 @@
 from python_scripts.pdb2msms import pdb_to_msms
 from python_scripts.allwater import run_allwater
+from python_scripts.get_internal_water import get_internal_water
 import argparse
 
 
@@ -16,8 +17,9 @@ if __name__ == "__main__":
     # 2. pass protein pdb to msms to generate surface files
     output_surface = pdb_to_msms(input_pdb, probe_radius=2, density=2)
     # 3. run AllWater to generate grid points
-    run_allwater(input_pdb, vert_file=output_surface)
-    # 4. run categorize water to remove surface water
+    output_all = run_allwater(input_pdb, vert_file=output_surface)
+    # 4. check b factor column to remove surface water
+    internal_pdb = get_internal_water(output_all)
     # 5. run placeWat to evaluate the grid points' energies
     # 6. filter the output of placeWat to keep only oxygen atoms
     # 7. remove water molecules with positive energies
