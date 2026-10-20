@@ -2,6 +2,7 @@ from python_scripts.pdb2msms import pdb_to_msms
 from python_scripts.allwater import run_allwater
 from python_scripts.get_internal_water import get_internal_water
 from python_scripts.placeWat import run_placeWat
+from python_scripts.remove_hydrogen import remove_h
 import argparse
 
 
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     # 5. run placeWat to evaluate the grid points' energies
     internal_pdb_dowser_E = run_placeWat(internal_pdb, input_pdb)
     # 6. filter the output of placeWat to keep only oxygen atoms
+    internal_pdb_dowser_E_OW = remove_h(internal_pdb_dowser_E)
     # 7. remove water molecules with positive energies
     # 8. run Monte Carlo algo to remove water-water clashes
     # 9. evaluate neural network score of remaining water molecules
