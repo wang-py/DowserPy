@@ -5,6 +5,7 @@ from python_scripts.placeWat import run_placeWat
 from python_scripts.remove_hydrogen import remove_h
 from python_scripts.remove_positive_dowser_energies import remove_positive_E
 from python_scripts.run_mc import run_mc
+from python_scripts.nn_evaluate import evaluate_waters
 import argparse
 
 
@@ -33,6 +34,7 @@ if __name__ == "__main__":
     # 8. run Monte Carlo algo to remove water-water clashes
     internal_pdb_mc = run_mc(internal_pdb_dowser_E_neg)
     # 9. evaluate neural network score of remaining water molecules
+    internal_pdb_mc_nn_eval = evaluate_waters(input_pdb, internal_pdb_mc)[0]
     # 10. do a second round of neural network evaluation after removing clashes
     # 11. save output as a pdb file
     pass
