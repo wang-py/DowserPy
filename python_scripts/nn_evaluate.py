@@ -1,25 +1,21 @@
 import argparse
 import os
+import pickle
 
 import matplotlib.pyplot as plt
 import numpy as np
 from keras import utils
 from keras.models import load_model
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_MODEL = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        'train_data_CAVs-beyond3.5L',
+        SCRIPT_DIR, 'train_data_CAVs-beyond3.5L',
         'Training_CAVs-beyond3.5L_b0.7_Adam_32_1000_adapt_restart_acc94.h5')
 
-# Initial atom/residue type encodings, as in pdb2descriptors.py. Types not
-# listed here are numbered in the order they are first met in the input.
-residue_types = {'ALA': 1, 'ARG': 2, 'ASP': 3, 'ASN': 4, 'CYS': 5, 'GLU': 6,
-                 'GLY': 7, 'HIS': 8, 'ILE': 9, 'LEU': 10, 'MET': 11, 'LYS': 12,
-                 'PHE': 13, 'PRO': 14, 'SEC': 15, 'SER': 16, 'THR': 17,
-                 'TYR': 18, 'TRP': 19, 'VAL': 20, 'HOH': 21}
-
-atom_types = {'C': 1, 'N': 2, 'O': 3, 'SD': 4, 'H': 5, 'CA': 6, 'CB': 7,
-              'CG': 8, 'CD1': 9, 'CD2': 10, 'CE1': 11, 'CE2': 12, 'CZ': 13}
+# Atom/residue type encodings. Types not listed are numbered when first met
+# and saved back to these files.
+ATOM_TYPES_PKL = os.path.join(SCRIPT_DIR, 'protein_data', 'atom_types.pkl')
+RESIDUE_TYPES_PKL = os.path.join(SCRIPT_DIR, 'protein_data', 'residue_types.pkl')
 
 # make sure results are reproducible
 seed_val = 1029
@@ -140,14 +136,6 @@ def generate_Z_descriptors(waters, atoms, n):
     return X
 
 
-def feature_encoder_atom(feature_number):
-    return np.array([np.cos(feature_number), np.sin(feature_number)])
-
-
-def feature_encoder_residue(feature_number):
-    return np.array([np.sin(feature_number), np.cos(feature_number)])
-
-
 def is_atom_record(rec):
     # Only ATOM/HETATM records carry coordinates. PDB Format: https://cupnet.net/pdb-format/
     return rec.startswith(('ATOM  ', 'HETATM'))
@@ -158,38 +146,70 @@ def is_water_record(rec):
     return is_atom_record(rec) and (rec[17:20] == 'HOH')
 
 
+def type_id(types, name):
+    if name not in types:
+        types[name] = max(types.values()) + 1
+        print(f'new type {name} assigned {types[name]}')
+    return types[name]
+
+
 def encode_records(records):
     """
-    encode ATOM/HETATM records as in pdb2descriptors.read_pdb
+    encode ATOM/HETATM records as in pdb2descriptors.read_pdb, with the type
+    numbers from ATOM_TYPES_PKL and RESIDUE_TYPES_PKL
     ----------------------------------------------------------------------------
     records: list of str
     ATOM/HETATM records
     ----------------------------------------------------------------------------
     Returns:
-    water_data, protein_data: ndarray: N x 7
+    data: ndarray: N x 7
     |A|A|R|R|X|Y|Z|
     """
-    # copies, so that types added for one structure do not leak into the next
-    atom_ids = dict(atom_types)
-    residue_ids = dict(residue_types)
-    water_data = []
-    protein_data = []
-    for line in records:
-        points = [float(x) for x in line[30:53].split()]
-        atom_type = line[13:16].strip()
-        res_type = line[17:20].strip()
-        if atom_type not in atom_ids:
-            atom_ids[atom_type] = len(atom_ids) + 1
-        if res_type not in residue_ids:
-            residue_ids[res_type] = len(residue_ids) + 1
-        one_data = np.concatenate((feature_encoder_atom(atom_ids[atom_type]),
-                                   feature_encoder_residue(residue_ids[res_type]),
-                                   points))
-        if res_type == 'HOH':
-            water_data.append(one_data)
-        else:
-            protein_data.append(one_data)
-    return np.array(water_data), np.array(protein_data)
+    with open(ATOM_TYPES_PKL, 'rb') as f:
+        atom_types = pickle.load(f)
+    with open(RESIDUE_TYPES_PKL, 'rb') as f:
+        residue_types = pickle.load(f)
+    n_types = len(atom_types), len(residue_types)
+
+    data = np.zeros([len(records), 7])
+    for i, line in enumerate(records):
+        # read_pdb takes the atom name from [13:16], so HD11 is stored as D11
+        atom_id = type_id(atom_types, line[13:16].strip())
+        res_id = type_id(residue_types, line[17:20].strip())
+        # PDB format https://cupnet.net/pdb-format/
+        data[i] = (np.cos(atom_id), np.sin(atom_id), np.sin(res_id), np.cos(res_id),
+                   float(line[30:38]), float(line[38:46]), float(line[46:54]))
+
+    if (len(atom_types), len(residue_types)) != n_types:
+        with open(ATOM_TYPES_PKL, 'wb') as f:
+            pickle.dump(atom_types, f)
+        with open(RESIDUE_TYPES_PKL, 'wb') as f:
+            pickle.dump(residue_types, f)
+    return data
+
+
+def read_system(protein_pdb, water_pdb):
+    """
+    read and encode a protein and a water pdb
+    ----------------------------------------------------------------------------
+    Returns:
+    water_file_records: list of str
+    every line of water_pdb
+
+    atoms: ndarray (W + P) x 7
+    the HOH records of water_pdb in file order, then the protein atoms
+    """
+    with open(protein_pdb, 'r') as f:
+        protein_records = [rec for rec in f if is_atom_record(rec) and not is_water_record(rec)]
+    with open(water_pdb, 'r') as f:
+        water_file_records = f.readlines()
+    water_records = [rec for rec in water_file_records if is_water_record(rec)]
+
+    # protein first, so that new types are numbered in read_pdb order
+    data = encode_records(protein_records + water_records)
+    n_protein = len(protein_records)
+    atoms = np.append(data[n_protein:], data[:n_protein], axis=0)
+    return water_file_records, atoms
 
 
 def get_bfactors(records):
@@ -200,7 +220,9 @@ def get_bfactors(records):
 def get_model_accuracy(model, X):
     # Probability of the "water" class, i.e. the dot product of the
     # prediction with the yes-label [1, 0].
-    y_predicted = np.array(model.predict(X, verbose=0))
+    # Calling the model directly avoids predict()'s per-call overhead, which
+    # dominates when nn_prune_clashes scores many small batches.
+    y_predicted = np.asarray(model(X, training=False))
     return y_predicted[:, 0]
 
 
@@ -278,17 +300,11 @@ def evaluate_waters(protein_pdb, water_pdb, output_pdb=None, model_path=DEFAULT_
     if output_pdb is None:
         output_pdb = os.path.splitext(water_pdb)[0] + '_nn.pdb'
 
-    with open(protein_pdb, 'r') as f:
-        protein_records = [rec for rec in f if is_atom_record(rec) and not is_water_record(rec)]
-    with open(water_pdb, 'r') as f:
-        water_file_records = f.readlines()
+    water_file_records, atoms = read_system(protein_pdb, water_pdb)
     water_records = [rec for rec in water_file_records if is_water_record(rec)]
+    print(f'evaluating NN scores for {len(water_records)} water')
 
-    water_data, protein_data = encode_records(protein_records + water_records)
-    total_data = np.append(water_data, protein_data, axis=0)
-    print(f'{len(water_data)} water and {len(protein_data)} protein atoms')
-
-    X = generate_Z_descriptors(water_data, total_data, n)
+    X = generate_Z_descriptors(atoms[:len(water_records)], atoms, n)
     model = load_model(model_path, compile=False)
     accuracy_values = get_model_accuracy(model, X)
     print(f'mean accuracy: {accuracy_values.mean():.2%}, ' +

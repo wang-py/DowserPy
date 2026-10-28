@@ -6,6 +6,7 @@ from python_scripts.remove_hydrogen import remove_h
 from python_scripts.remove_positive_dowser_energies import remove_positive_E
 from python_scripts.run_mc import run_mc
 from python_scripts.nn_evaluate import evaluate_waters
+from python_scripts.nn_prune_clashes import prune_waters
 import argparse
 
 
@@ -36,5 +37,6 @@ if __name__ == "__main__":
     # 9. evaluate neural network score of remaining water molecules
     internal_pdb_mc_nn_eval = evaluate_waters(input_pdb, internal_pdb_mc)[0]
     # 10. do a second round of neural network evaluation after removing clashes
+    internal_pdb_pruned = prune_waters(input_pdb, internal_pdb_mc_nn_eval)[0]
     # 11. save output as a pdb file
     pass
