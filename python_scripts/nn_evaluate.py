@@ -315,6 +315,7 @@ def evaluate_waters(protein_pdb, water_pdb, output_pdb=None, model_path=DEFAULT_
 
     if plot:
         acc_and_bfactors = np.c_[accuracy_values, get_bfactors(water_records)]
+        os.makedirs("results/", exist_ok=True)
         figname = "results/" + os.path.splitext(os.path.basename(output_pdb))[0] + '.png'
         plot_water_data(acc_and_bfactors, figname, sort_key)
 

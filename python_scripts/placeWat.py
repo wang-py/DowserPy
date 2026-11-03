@@ -1,12 +1,15 @@
+import os
 import subprocess
 from pathlib import Path
 
 
 def reformat_pdb(input_pdb):
     print(f"reformatting {input_pdb} into Dowser format...")
+    os.makedirs("temp/", exist_ok=True)
     output = "temp/" + str(Path(input_pdb).stem) + "_DOWSER.pdb"
-    args = ["./reform", "-pdbin", "../../" + input_pdb, "-pdbout",
-            "../../" + output]
+    # the binaries run from bin/dowser/, so pass absolute paths
+    args = ["./reform", "-pdbin", str(Path(input_pdb).resolve()), "-pdbout",
+            str(Path(output).resolve())]
     subprocess.run(args, cwd="bin/dowser/", check=True)
     print(f"reformatted pdb saved to {output}")
     return output
@@ -15,10 +18,11 @@ def reformat_pdb(input_pdb):
 def run_placeWat(input_grid_pdb, input_protein_pdb):
     input_protein_dowser = reformat_pdb(input_protein_pdb)
     print(f"evaluating energies of grid points in {input_grid_pdb}...")
+    os.makedirs("results/", exist_ok=True)
     output = "results/" + str(Path(input_grid_pdb).stem) +\
              "_dowser_energies.pdb"
-    args = ["./placeWat", "../../" + input_protein_dowser,
-            "../../" + input_grid_pdb, "rotate"]
+    args = ["./placeWat", str(Path(input_protein_dowser).resolve()),
+            str(Path(input_grid_pdb).resolve()), "rotate"]
     with open(output, 'w') as f:
         subprocess.run(args, cwd="bin/dowser/", stdout=f, check=True)
 
